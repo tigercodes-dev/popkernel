@@ -1,0 +1,4 @@
+# Ignore all built files that have been copied onto the cd
+
+# iso-x86_64
+iso-x86_64/boot/pkrnl.kb*

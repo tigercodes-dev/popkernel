@@ -1,0 +1,7 @@
+# Ignore build directories
+toolchain/
+build/
+dist/
+
+# Ignore .vscode configuration
+.vscode/
