@@ -1,5 +1,5 @@
 /*
-    PopKernel OS kernel linker script
+    PopKernel OS - x86_64 kernel loggging
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-ENTRY(start)
-OUTPUT_FORMAT("binary")
+#ifndef DEBUG_LOGGING_H
+#define DEBUG_LOGGING_H
 
-_kernel_load = 2M;
+#include "../drivers/graphics/vga/textmode.h"
 
-SECTIONS {
-    . = _kernel_load;
+void debug_log(const char* s);
 
-    .boot   : { _multiboot_header = .; KEEP(*(.multiboot)) }
-
-    .entry  : { _entry_start = .;  *(.entry)  }
-    .text   : { _text_start = .;   *(.text)   }
-
-    .rodata : { _rodata_start = .; *(.rodata) }
-    .data   : { _data_start = .;   *(.data)   }
-    .bss    : { _bss_start = .;    *(.bss)    }
-
-    _end = .;
-}
+#endif

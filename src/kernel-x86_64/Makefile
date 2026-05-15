@@ -17,8 +17,11 @@
 SRC_ASM := $(shell find -type f -name '*.asm')
 OBJ_ASM := $(patsubst %.asm, $(BUILDDIR)/kernel-x86_64/%.asm.o, $(SRC_ASM))
 
-ASFLAGS += -felf64
+SRC_C := $(shell find -type f -name '*.c')
+OBJ_C := $(patsubst %.c, $(BUILDDIR)/kernel-x86_64/%.c.o, $(SRC_C))
+
 LDFLAGS += -n
+CFLAGS += -I ../include -ffreestanding
 
 .PHONY: all kernel-x86_64
 
@@ -26,12 +29,17 @@ all: kernel-x86_64
 
 $(BUILDDIR)/kernel-x86_64/%.asm.o: %.asm
 	@mkdir -p $(@D)
-	@$(AS) $(ASFLAGS) -o $@ $<
+	@$(AS) $(ASFLAGS) -felf64 -o $@ $<
 	@echo "AS $< --> $@"
+
+$(BUILDDIR)/kernel-x86_64/%.c.o: %.c
+	@mkdir -p $(@D)
+	@$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "CC $< --> $@"
 
 kernel-x86_64: $(DISTDIR)/x86_64-pkrnl.kb0.bin
 
-$(DISTDIR)/x86_64-pkrnl.kb0.bin: $(OBJ_ASM)
+$(DISTDIR)/x86_64-pkrnl.kb0.bin: linker.ld $(OBJ_ASM) $(OBJ_C)
 	@mkdir -p $(@D)
-	@$(LD) $(LDLIBS) $(LDFLAGS) -T linker.ld -o $@ $^
+	@$(LD) $(LDLIBS) $(LDFLAGS) -T $< -o $@ $(OBJ_ASM) $(OBJ_C)
 	@echo "LD --> $@"

@@ -1,4 +1,4 @@
-;    PopKernel OS - x86_64 kernel multiboot header
+;    PopKernel OS - x86_64 kernel after long mode setup
 ;    Copyright (C) 2026  tigercodes-dev
 ;
 ;    This program is free software: you can redistribute it and/or modify
@@ -14,40 +14,22 @@
 ;    You should have received a copy of the GNU General Public License
 ;    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-section .multiboot
+bits 64
 
-extern _entry_start
-extern _bss_start
-extern _end
+extern kmain
 
-multiboot_start:
+section .text
 
-    align 8
-    dd 0xe85250d6 ; multiboot2 magic number
-    dd 0
-    dd multiboot_end - multiboot_start
-    dd 0x100000000 - (0xe85250d6 + 0 + (multiboot_end - multiboot_start))
+global setup64
+setup64:
+    ; reset segment registers
+    xor ax, ax
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
 
-    ; address tag
-    align 8
-    dw 2 ; type
-    dw 0 ; flags
-    dd 24 ; tag size
-    dd multiboot_start
-    dd _entry_start
-    dd _bss_start ; bss start is the end of the data segment
-    dd _end
-
-    ; entry tag
-    align 8
-    dw 3 ; type
-    dw 0 ; flags
-    dd 12 ; tag size
-    dd _entry_start
-
-    align 8
-    dw 0
-    dw 0
-    dd 8
-
-multiboot_end:
+    call kmain
+    
+    hlt

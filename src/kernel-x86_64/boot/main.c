@@ -1,5 +1,5 @@
 /*
-    PopKernel OS kernel linker script
+    PopKernel OS - x86_64 kernel after long mode setup
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-ENTRY(start)
-OUTPUT_FORMAT("binary")
+#include "../drivers/graphics/vga/textmode.h"
+#include "../debugging/logging.h"
 
-_kernel_load = 2M;
-
-SECTIONS {
-    . = _kernel_load;
-
-    .boot   : { _multiboot_header = .; KEEP(*(.multiboot)) }
-
-    .entry  : { _entry_start = .;  *(.entry)  }
-    .text   : { _text_start = .;   *(.text)   }
-
-    .rodata : { _rodata_start = .; *(.rodata) }
-    .data   : { _data_start = .;   *(.data)   }
-    .bss    : { _bss_start = .;    *(.bss)    }
-
-    _end = .;
+// Kernel initialization
+void kmain() {
+    clear_screen();
+    for (;;);
 }

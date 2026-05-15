@@ -1,5 +1,5 @@
 /*
-    PopKernel OS kernel linker script
+    PopKernel OS - x86_64 kernel IO ports
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,27 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-ENTRY(start)
-OUTPUT_FORMAT("binary")
+#ifndef IO_H
+#define IO_H
 
-_kernel_load = 2M;
+#include <integers.h>
 
-SECTIONS {
-    . = _kernel_load;
+// Output a byte (8 bits) to a IO port
+void outb(u16 port, u8 data);
 
-    .boot   : { _multiboot_header = .; KEEP(*(.multiboot)) }
+// Take a byte (8 bits) of input from a IO port
+u8 inb(u16 port);
 
-    .entry  : { _entry_start = .;  *(.entry)  }
-    .text   : { _text_start = .;   *(.text)   }
+// Output a word (16 bits) to a IO port
+void outw(u16 port, u16 data);
 
-    .rodata : { _rodata_start = .; *(.rodata) }
-    .data   : { _data_start = .;   *(.data)   }
-    .bss    : { _bss_start = .;    *(.bss)    }
+// Take a word (16 bits) of input from a IO port
+u16 inw(u16 port);
 
-    _end = .;
-}
+// Output a long (32 bits) to a IO port
+void outl(u16 port, u32 data);
+
+// Take a long (32 bits) of input from a IO port
+u32 inl(u16 port);
+
+#endif
