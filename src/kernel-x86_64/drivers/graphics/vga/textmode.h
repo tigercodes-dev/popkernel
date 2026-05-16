@@ -32,4 +32,7 @@ void clear_screen();
 // Print a character to the VGA screen at the current cursor position.
 void vgaputc(VGAChar c);
 
+// Print a string to the VGA screen at the current cursor position.
+void vgaputs(const char* s, u8 color);
+
 #endif

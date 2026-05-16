@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - x86_64 kernel E9 port hack loggging
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
+// Output a character to port E9 (QEMU debug)
+void e9putc(char c);
 
-// Kernel initialization
-void kmain() {
-    clear_screen();
-    debug_log(LOG_INFO, "Kernel loaded.\n");
-    for (;;);
-}
+// Output a string to port E9 (QEMU debug)
+void e9puts(const char* s);

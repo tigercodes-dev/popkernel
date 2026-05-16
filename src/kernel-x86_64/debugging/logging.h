@@ -21,6 +21,13 @@
 
 #include "../drivers/graphics/vga/textmode.h"
 
-void debug_log(const char* s);
+typedef enum {
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR,
+} LogLevel;
+
+void debug_log(LogLevel level, const char* s);
 
 #endif

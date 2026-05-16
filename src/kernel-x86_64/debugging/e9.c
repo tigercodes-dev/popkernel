@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - x86_64 kernel E9 port hack loggging
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
+#include "e9.h"
+#include "../io.h"
 
-// Kernel initialization
-void kmain() {
-    clear_screen();
-    debug_log(LOG_INFO, "Kernel loaded.\n");
-    for (;;);
+void e9putc(char c) {
+    outb(0xE9, c);
+}
+
+void e9puts(const char* s) {
+    while (*s) {
+        e9putc(*s);
+        s++;
+    }
 }

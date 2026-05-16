@@ -29,12 +29,25 @@ int screenY = 0;
 
 // Move the cursor to (screenX, screenY)
 void upd_cursor() {
-    int pos = screenY * VGA_HEIGHT + screenX;
+    int pos = screenY * VGA_WIDTH + screenX;
 
     outb(0x3D4, 0xF);
     outb(0x3D5, (uint8_t)(pos & 0xFF));
     outb(0x3D4, 0xE);
     outb(0x3D5, (uint8_t)((pos >> 8) & 0xFF));
+}
+
+// Scroll the screen up one line
+void scroll_up() {
+    for (int y = 0; y < VGA_HEIGHT - 1; y++) {
+        for (int x = 0; x < VGA_WIDTH; x++) {
+            vgabuffer[y * VGA_WIDTH + x] = vgabuffer[(y + 1) * VGA_WIDTH + x];
+        }
+    }
+
+    for (int x = 0; x < VGA_WIDTH; x++) {
+        vgabuffer[VGA_WIDTH * (VGA_HEIGHT - 1) + x] = (VGAChar){.chr = 0, .color = 0x07};
+    }
 }
 
 void clear_screen() {
@@ -47,7 +60,7 @@ void clear_screen() {
 }
 
 void vgaputc(VGAChar c) {
-    int pos = screenY * VGA_HEIGHT + screenX;
+    int pos = screenY * VGA_WIDTH + screenX;
     switch (c.chr) {
         case '\n':
             screenX = 0;
@@ -58,14 +71,26 @@ void vgaputc(VGAChar c) {
             break;
         default:
             vgabuffer[pos] = c;
+            screenX++;
             break;
     }
-    screenX++;
 
     if (screenX >= VGA_WIDTH) {
         screenX = 0;
         screenY++;
     }
 
+    if (screenY >= VGA_HEIGHT) {
+        scroll_up();
+        screenY--;
+    }
+
     upd_cursor();
+}
+
+void vgaputs(const char* s, u8 color) {
+    while (*s) {
+        vgaputc((VGAChar){.chr = *s, .color = color});
+        s++;
+    }
 }
