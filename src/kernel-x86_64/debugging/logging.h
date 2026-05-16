@@ -30,4 +30,6 @@ typedef enum {
 
 void debug_log(LogLevel level, const char* s);
 
+void debug_logf(LogLevel level, const char* fmt, ...);
+
 #endif

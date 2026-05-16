@@ -19,9 +19,11 @@
 #include "../drivers/graphics/vga/textmode.h"
 #include "../debugging/logging.h"
 
+extern u8 _kernel_load;
+
 // Kernel initialization
 void kmain() {
     clear_screen();
-    debug_log(LOG_INFO, "Kernel loaded.\n");
+    debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
     for (;;);
 }
