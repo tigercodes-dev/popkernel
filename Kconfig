@@ -59,5 +59,19 @@ if DEBUGGING
             Enables support for debug logs using the E9 port hack.
             This allows guests to send debug messages to the host when emulating with QEMU or Bochs.
 
-endif
+    config DEBUG_SYMBOLS
+        bool "Export Debugging Symbols"
+        default y
+        help
+            Enables exporting debugging symbols during the compilation proccess.
+            These can be used with debuggers like GDB to put breakpoints at kernel functions.
+    
+    config DEBUG_SYMBOLS_OUTPUT
+        string "Debugging Symbols Output File"
+        default "dist/x86_64-pkrnl.dbg"
+        depends on DEBUG_SYMBOLS
+        help
+            Defines the output file for the debugging symbols.
+            This is relative to the root of the project.
 
+endif

@@ -20,7 +20,7 @@ OBJ_ASM := $(patsubst %.asm, $(BUILDDIR)/kernel-x86_64/%.asm.o, $(SRC_ASM))
 SRC_C := $(shell find -type f -name '*.c')
 OBJ_C := $(patsubst %.c, $(BUILDDIR)/kernel-x86_64/%.c.o, $(SRC_C))
 
-LDFLAGS += -n
+LDFLAGS += -n --no-warn-rwx-segments
 CFLAGS += -I ../include -ffreestanding
 
 ifeq ($(CONFIG_MEMORY_MAP),y)
@@ -35,6 +35,16 @@ ifeq ($(CONFIG_DEBUGGING),y)
 CFLAGS += -DDEBUG_ENABLED
 ifeq ($(CONFIG_DEBUG_E9_HACK),y)
 CFLAGS += -DE9_DEBUG_ENABLED
+endif
+
+ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
+ABS_DEBUG_SYMBOLS_OUTPUT := $(ROOTDIR)/$(patsubst "%",%,$(CONFIG_DEBUG_SYMBOLS_OUTPUT))
+kernel-x86_64: $(ABS_DEBUG_SYMBOLS_OUTPUT)
+
+$(ABS_DEBUG_SYMBOLS_OUTPUT): $(DISTDIR)/x86_64-pkrnl.kb0.elf
+	@$(OBJCOPY) --only-keep-debug $< $@
+	@echo "  OBJCOPY $< --> $@"
+
 endif
 endif
 
@@ -54,7 +64,11 @@ $(BUILDDIR)/kernel-x86_64/%.c.o: %.c
 
 kernel-x86_64: $(DISTDIR)/x86_64-pkrnl.kb0.bin
 
-$(DISTDIR)/x86_64-pkrnl.kb0.bin: linker.ld $(OBJ_ASM) $(OBJ_C)
+$(DISTDIR)/x86_64-pkrnl.kb0.bin: $(DISTDIR)/x86_64-pkrnl.kb0.elf
+	@$(OBJCOPY) --output-target=binary $< $@
+	@echo "  OBJCOPY $< --> $@"
+
+$(DISTDIR)/x86_64-pkrnl.kb0.elf: linker.ld $(OBJ_ASM) $(OBJ_C)
 	@mkdir -p $(@D)
 	@$(LD) $(LDLIBS) $(LDFLAGS) -T $< -o $@ $(OBJ_ASM) $(OBJ_C)
 	@echo "  LD --> $@"

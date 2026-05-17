@@ -30,10 +30,11 @@ export AS := nasm
 export CC := $(TARGET)-gcc
 export CXX := $(TARGET)-g++
 export LD := $(TARGET)-ld
+export OBJCOPY := $(TARGET)-objcopy
 
 export ASFLAGS :=
-export CFLAGS := -std=c99 -g
-export CXXFLAGS := -g
+export CFLAGS := -std=c99
+export CXXFLAGS :=
 export LDFLAGS :=
 export LDLIBS := 
 
@@ -51,12 +52,21 @@ export CONFIG_KERNEL_LOAD_ADDRESS
 export CONFIG_DEBUGGING
 export CONFIG_DEBUG_E9_HACK
 
+export CONFIG_DEBUG_SYMBOLS
+export CONFIG_DEBUG_SYMBOLS_OUTPUT
+
+endif
+
 ifeq ($(CONFIG_ENABLE_WERROR),y)
 export ASFLAGS += -Werror
 export CFLAGS += -Werror
 export CXXFLAGS += -Werror
 endif
 
+ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
+export ASFLAGS += -g -F dwarf
+export CFLAGS += -g
+export CXXFLAGS += -g
 endif
 
 # Add the toolchain binaries to PATH

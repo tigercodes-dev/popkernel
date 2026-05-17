@@ -6,5 +6,9 @@ dist/
 # Ignore .vscode configuration
 .vscode/
 
-# Ignore config
-.config*
+# Ignore configs
+*.config
+*.config.old
+
+# Keep configs in config directory
+! /config/*.config

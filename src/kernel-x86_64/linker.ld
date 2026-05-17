@@ -17,7 +17,6 @@
 */
 
 ENTRY(start)
-OUTPUT_FORMAT("binary")
 
 SECTIONS {
     . = _kernel_load;
