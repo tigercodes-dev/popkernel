@@ -24,8 +24,7 @@ SECTIONS {
 
     .boot   : { _multiboot_header = .; KEEP(*(.multiboot)) }
 
-    .entry  : { _entry_start = .;  *(.entry)  }
-    .text   : { _text_start = .;   *(.text)   }
+    .text   : { _text_start = .; *(.entry)  *(.text) }
 
     .rodata : { _rodata_start = .; *(.rodata) }
     .data   : { _data_start = .;   *(.data)   }

@@ -16,7 +16,7 @@
 
 section .multiboot
 
-extern _entry_start
+extern _text_start
 extern _bss_start
 extern _end
 
@@ -34,7 +34,7 @@ multiboot_start:
     dw 0 ; flags
     dd 24 ; tag size
     dd multiboot_start
-    dd _entry_start
+    dd _text_start
     dd _bss_start ; bss start is the end of the data segment
     dd _end
 
@@ -43,7 +43,7 @@ multiboot_start:
     dw 3 ; type
     dw 0 ; flags
     dd 12 ; tag size
-    dd _entry_start
+    dd _text_start
 
     align 8
     dw 0
