@@ -106,13 +106,15 @@ clean:
 
 menuconfig: dep-check
 	@kconfig-mconf Kconfig
+	@echo "*You will need to run 'make clean' if you have already built the OS with these source files!*"
 
 defconfig: configs/default-$(ARCH).config
 	@mv .config .config.old
 	@cp $< .config
 	@echo "Loaded config $<."
 	@echo
-	@echo "Use make menuconfig to configure further."
+	@echo "Use 'make menuconfig' to configure further."
+	@echo "*You will need to run 'make clean' if you have already built the OS with these source files!*"
 
 help:
 	@echo "PopKernel OS"

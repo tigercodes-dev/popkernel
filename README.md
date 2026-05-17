@@ -27,6 +27,9 @@ Run `scripts/build-toolchain.sh` to build it. This may take a while.
 
 ### Code
 
+Firstly, configure your build. You can use `make defconfig` to load a default configuration, or you can use `make menuconfig` for more advanced configuration.
+If you have already built the OS, you will need to run `make clean` to make sure all build files are removed.
+
 Run `make` to build the kernel using the Makefile. A bootable ISO disk image will be output to the `dist` directory.
 
 ## Testing
