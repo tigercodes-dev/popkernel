@@ -23,6 +23,21 @@ OBJ_C := $(patsubst %.c, $(BUILDDIR)/kernel-x86_64/%.c.o, $(SRC_C))
 LDFLAGS += -n
 CFLAGS += -I ../include -ffreestanding
 
+ifeq ($(CONFIG_MEMORY_MAP),y)
+LDFLAGS += -Map=$(ROOTDIR)/$(CONFIG_MEMORY_MAP_OUTPUT)
+endif
+
+ASFLAGS += -dSTACKSIZE=$(CONFIG_STACK_SIZE)
+
+LDFLAGS += --defsym _kernel_load=$(CONFIG_KERNEL_LOAD_ADDRESS)
+
+ifeq ($(CONFIG_DEBUGGING),y)
+CFLAGS += -DDEBUG_ENABLED
+ifeq ($(CONFIG_DEBUG_E9_HACK),y)
+CFLAGS += -DE9_DEBUG_ENABLED
+endif
+endif
+
 .PHONY: all kernel-x86_64
 
 all: kernel-x86_64
@@ -30,16 +45,16 @@ all: kernel-x86_64
 $(BUILDDIR)/kernel-x86_64/%.asm.o: %.asm
 	@mkdir -p $(@D)
 	@$(AS) $(ASFLAGS) -felf64 -o $@ $<
-	@echo "AS $< --> $@"
+	@echo "  AS $< --> $@"
 
 $(BUILDDIR)/kernel-x86_64/%.c.o: %.c
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -c -o $@ $<
-	@echo "CC $< --> $@"
+	@echo "  CC $< --> $@"
 
 kernel-x86_64: $(DISTDIR)/x86_64-pkrnl.kb0.bin
 
 $(DISTDIR)/x86_64-pkrnl.kb0.bin: linker.ld $(OBJ_ASM) $(OBJ_C)
 	@mkdir -p $(@D)
 	@$(LD) $(LDLIBS) $(LDFLAGS) -T $< -o $@ $(OBJ_ASM) $(OBJ_C)
-	@echo "LD --> $@"
+	@echo "  LD --> $@"

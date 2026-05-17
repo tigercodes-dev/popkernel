@@ -16,12 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if DEBUG_ENABLED
+
 #include "logging.h"
 #include "e9.h"
 #include <stdarg.h>
 #include <stdbool.h>
-
-#define E9_DEBUG_ENABLED 1
 
 void vga_print_tag(LogLevel level) {
     switch (level) {
@@ -267,3 +267,5 @@ void debug_logf(LogLevel level, const char* fmt, ...) {
 
     va_end(args);
 }
+
+#endif

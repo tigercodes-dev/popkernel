@@ -15,11 +15,6 @@
 ;    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 bits 32
-
-; define the stack size
-%ifndef STACKSIZE
-%define STACKSIZE 8192
-%endif
  
 section .entry
 

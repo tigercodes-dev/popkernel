@@ -19,8 +19,6 @@
 ENTRY(start)
 OUTPUT_FORMAT("binary")
 
-_kernel_load = 2M;
-
 SECTIONS {
     . = _kernel_load;
 

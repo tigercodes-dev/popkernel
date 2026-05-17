@@ -19,6 +19,8 @@
 #ifndef DEBUG_LOGGING_H
 #define DEBUG_LOGGING_H
 
+#if DEBUG_ENABLED
+
 #include "../drivers/graphics/vga/textmode.h"
 
 typedef enum {
@@ -31,5 +33,7 @@ typedef enum {
 void debug_log(LogLevel level, const char* s);
 
 void debug_logf(LogLevel level, const char* fmt, ...);
+
+#endif
 
 #endif

@@ -1,0 +1,63 @@
+mainmenu "PopKernel OS (BETA) Configuration"
+
+menu "Compilation Options"
+    config ENABLE_WERROR
+        bool "Enable Compiling with Warnings as Errors"
+        default y
+        help
+            Use to compile with warnings as errors. Typically, this is kept enabled to prevent unwanted behavior caught by the compiler. Disable this option if you are building experimental features or using different compilers/versions.
+
+    config MEMORY_MAP
+        bool "Generate a Kernel Memory Map"
+        default y
+        help
+            Enables/disables generating a memory map during the linking process of the kernel.
+    
+    config MEMORY_MAP_OUTPUT
+        string "Memory Map Output File"
+        default "dist/x86_64-pkrnl.map"
+        depends on MEMORY_MAP
+        help
+            Defines the output file for the memory map.
+            This is relative to the root of the project.
+
+endmenu
+
+menu "CPU and Memory Management"
+    config STACK_SIZE
+        int "Kernel Stack Size (bytes)"
+        default 16384
+        range 8192 65536
+        help
+            Sets the kernel's internal stack size, which is different than the user mode stack.
+            For 64 bit processors, this should typically be at least 16KB.
+            It is not suggested to change this value. The default should be more than enough.
+
+    config KERNEL_LOAD_ADDRESS
+        hex "Kernel Memory Load Address"
+        range 0x100000 0xFFFFFFFFFFFFFFFF
+        default 0x200000
+        help
+            Sets the kernel's load address in memory. By default this is at 2MiB, but it can increase higher.
+            Make sure that enough physical memory exists at that location so the kernel can load sucessfully.
+            This value must be more than 1MiB because the BIOS and hardware devices use that area.
+
+endmenu
+
+menuconfig DEBUGGING
+    bool "Debugging Support"
+    default y
+    help
+        Enables support for debugging.
+        This includes verbose info, warning, and error messages.
+
+if DEBUGGING
+    config DEBUG_E9_HACK
+        bool "E9 Port Hack Debugging"
+        default n
+        help
+            Enables support for debug logs using the E9 port hack.
+            This allows guests to send debug messages to the host when emulating with QEMU or Bochs.
+
+endif
+

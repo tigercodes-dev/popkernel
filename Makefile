@@ -17,6 +17,7 @@
 export ARCH ?= x86_64
 export TARGET := $(ARCH)-elf
 
+export ROOTDIR := $(abspath .)
 export BUILDDIR := $(abspath build)
 export DISTDIR := $(abspath dist)
 export MEDIADIR := $(abspath media)
@@ -38,10 +39,30 @@ export LDLIBS :=
 
 TEXTVIEWER ?= less
 
+ifneq ("$(wildcard .config)", "")
+include .config
+
+export CONFIG_ENABLE_WERROR
+export CONFIG_MEMORY_MAP
+export CONFIG_MEMORY_MAP_OUTPUT
+
+export CONFIG_STACK_SIZE
+export CONFIG_KERNEL_LOAD_ADDRESS
+export CONFIG_DEBUGGING
+export CONFIG_DEBUG_E9_HACK
+
+ifeq ($(CONFIG_ENABLE_WERROR),y)
+export ASFLAGS += -Werror
+export CFLAGS += -Werror
+export CXXFLAGS += -Werror
+endif
+
+endif
+
 # Add the toolchain binaries to PATH
 export PATH := $(TOOLCHAINDIR)/$(TARGET)/bin:$(PATH)
 
-.PHONY: all all-x86_64 iso iso-x86_64 kernel kernel-x86_64 clean help license
+.PHONY: all all-x86_64 iso iso-x86_64 kernel kernel-x86_64 dep-check config-check clean menuconfig help license
 
 all: all-$(ARCH)
 
@@ -49,7 +70,7 @@ all-x86_64: iso-x86_64
 
 iso: iso-$(ARCH)
 
-iso-x86_64: kernel-x86_64
+iso-x86_64: kernel-x86_64 dep-check config-check
 	@echo "Copying boot files to iso..."
 	cp $(DISTDIR)/x86_64-pkrnl.kb0.bin $(ISOROOT)/boot/pkrnl.kb0
 	@echo "Creating bootable iso..."
@@ -58,13 +79,40 @@ iso-x86_64: kernel-x86_64
 
 kernel: kernel-$(ARCH)
 
-kernel-x86_64:
+kernel-x86_64: dep-check config-check
 	@$(MAKE) -C src/kernel-x86_64
+
+dep-check:
+	@echo "Checking dependencies..."
+	@echo
+	@$(SCRIPTSDIR)/dep-check.sh
+	@echo "Dependencies are OK."
+	@echo
+
+config-check:
+	@echo "Checking for configurations..."
+	@echo
+	@if [ ! -f .config ]; then \
+		echo -e "You need to configure the build first.\nRun make defconfig to load a default configuration or run make menuconfig to open a configuration menu." && exit 1; \
+	fi
+	@echo
+	@echo "Configurations for build were found."
+	@echo
 
 clean:
 	rm -rf $(BUILDDIR)/{*,.*}
 	rm -rf $(DISTDIR)/{*,.*}
 	rm -f $(ISOROOT)/boot/pkrnl.kb*
+
+menuconfig: dep-check
+	@kconfig-mconf Kconfig
+
+defconfig: configs/default-$(ARCH).config
+	@mv .config .config.old
+	@cp $< .config
+	@echo "Loaded config $<."
+	@echo
+	@echo "Use make menuconfig to configure further."
 
 help:
 	@echo "PopKernel OS"
@@ -86,6 +134,10 @@ help:
 	@echo "-------------------------------------------------------------------------"
 	@echo
 	@echo "Makefile Targets:"
+	@echo
+	@echo "Configuration Targets:"
+	@echo "  menuconfig: opens a configuration menu"
+	@echo "  defconfig: loads the default configuration"
 	@echo
 	@echo "Build Targets:"
 	@echo "  all: build everything for the configured architecture"

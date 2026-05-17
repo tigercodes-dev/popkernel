@@ -9,12 +9,13 @@ A operating system kernel that pops.
 - `qemu-system-x86` - virtualization/testing
 - `grub` - creating bootable ISO
 - `xorriso` - needed by grub to create the ISO
+- `kconfig-frontends` - used for the menuconfig
 - Extra tools for cross compiling GCC and Binutils
     - gcc, g++, bison, flex, libgmp, libmpc, libmpfr, texinfo
 
 ### Ubuntu, Debian (apt)
 ```
-$ sudo apt install make nasm qemu-system-x86 grub2-common grub-pc-bin xorriso build-essential bison flex libgmp-dev libmpc-dev libmpfr-dev texinfo
+$ sudo apt install make nasm qemu-system-x86 grub2-common grub-pc-bin xorriso build-essential bison flex libgmp-dev libmpc-dev libmpfr-dev texinfo kconfig-frontends
 ```
 
 ## Building
