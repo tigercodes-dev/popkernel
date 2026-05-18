@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - x86_64 global descriptor table
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,20 +16,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
-#include "gdt.h"
+#include <integers.h>
 
-extern u8 _kernel_load;
+struct __attribute__((packed)) GDTEntry {
+    u16 limit_low;
+    u16 base_low;
+    u8 base_mid;
+    u8 access;
+    u8 limit_high_flags;
+    u8 base_high;
+};
 
-// Kernel initialization
-void kmain() {
-    clear_screen();
-    #if DEBUG_ENABLED
-    debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
-    #endif
+struct __attribute__((packed)) GDTDescriptor {
+    u16 size;
+    struct GDTEntry* gdt;
+};
 
-    GDT_setup();
-
-    for (;;);
-}
+void GDT_setup();
