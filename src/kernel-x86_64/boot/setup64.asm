@@ -23,7 +23,7 @@ section .text
 global setup64
 setup64:
     ; reset segment registers
-    xor ax, ax
+    pop ax
     mov ds, ax
     mov es, ax
     mov fs, ax

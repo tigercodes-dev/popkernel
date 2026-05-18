@@ -31,6 +31,7 @@ start:
     call setup_paging
 
     lgdt [gdt64_desc]
+    push word gdt64.data_seg
     jmp gdt64.code_seg:setup64
 
     jmp fail ; this shouldnt ever happen but just in case
@@ -133,7 +134,10 @@ gdt64:
     dq 0 ; Null
 
 .code_seg: equ $ - gdt64
-    dq (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) ; Code segment
+    dq (1 << 41) | (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) | (1 << 55) ; Code segment
+
+.data_seg: equ $ - gdt64
+    dq (1 << 41) | (1 << 44) | (1 << 47) | (1 << 53) | (1 << 55) ; Data segment
 
 gdt64_desc:
     dw $ - gdt64 - 1
