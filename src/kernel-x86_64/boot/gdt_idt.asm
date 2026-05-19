@@ -38,3 +38,9 @@ GDT_load:
     mov ss, dx
 
     ret
+
+global IDT_load
+IDT_load:
+    lidt [rdi]
+
+    ret

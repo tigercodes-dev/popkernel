@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - binary macros
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,22 +16,5 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
-#include "gdt.h"
-#include "idt.h"
-
-extern u8 _kernel_load;
-
-// Kernel initialization
-void kmain() {
-    clear_screen();
-    #if DEBUG_ENABLED
-    debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
-    #endif
-
-    GDT_setup();
-    IDT_setup();
-
-    for (;;);
-}
+#define SET_FLAG(v, f) (v) |= (f)
+#define UNSET_FLAG(v, f) (v) &= ~(f)
