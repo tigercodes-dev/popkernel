@@ -28,7 +28,7 @@ int screenX = 0;
 int screenY = 0;
 
 // Move the cursor to (screenX, screenY)
-void upd_cursor() {
+static void upd_cursor() {
     int pos = screenY * VGA_WIDTH + screenX;
 
     outb(0x3D4, 0xF);
@@ -38,7 +38,7 @@ void upd_cursor() {
 }
 
 // Scroll the screen up one line
-void scroll_up() {
+static void scroll_up() {
     for (int y = 0; y < VGA_HEIGHT - 1; y++) {
         for (int x = 0; x < VGA_WIDTH; x++) {
             vgabuffer[y * VGA_WIDTH + x] = vgabuffer[(y + 1) * VGA_WIDTH + x];

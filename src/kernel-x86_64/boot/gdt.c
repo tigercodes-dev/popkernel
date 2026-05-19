@@ -50,7 +50,7 @@ enum GDTFlags {
     GDT_GRAN_4K       = 0x80,
 };
 
-struct GDTEntry gdt[] = {
+static struct GDTEntry gdt[] = {
     { 0, 0, 0, 0, 0, 0 }, // NULL Descriptor
     {
         0xFFFF, 0, 0, GDT_CS_READABLE | GDT_CODE_SEGMENT | GDT_RING_0 | GDT_PRESENT,
@@ -70,7 +70,7 @@ struct GDTEntry gdt[] = {
     }, // User Mode Code Segment
 };
 
-struct GDTDescriptor gdt_desc = { sizeof(gdt) - 1, gdt };
+static struct GDTDescriptor gdt_desc = { sizeof(gdt) - 1, gdt };
 
 void GDT_setup() {
     GDT_load(&gdt_desc, 0x08, 0x10);

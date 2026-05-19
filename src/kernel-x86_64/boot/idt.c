@@ -33,9 +33,9 @@ enum IDTFlags {
     IDT_PRESENT         = 0x80,
 };
 
-struct IDTEntry idt[256];
+static struct IDTEntry idt[256];
 
-struct IDTDescriptor idt_desc = { sizeof(idt) - 1, idt };
+static struct IDTDescriptor idt_desc = { sizeof(idt) - 1, idt };
 
 void IDT_set_gate(u8 interrupt, void* offset, u16 segment_selector, u8 flags) {
     struct IDTEntry* entry = &idt[interrupt];

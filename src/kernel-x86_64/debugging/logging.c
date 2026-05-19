@@ -23,7 +23,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-void vga_print_tag(LogLevel level) {
+static void vga_print_tag(LogLevel level) {
     switch (level) {
         case LOG_DEBUG:
             vgaputs("[DEBUG]:", 0x0F);
@@ -43,7 +43,7 @@ void vga_print_tag(LogLevel level) {
 
 #if E9_DEBUG_ENABLED
 
-void e9_print_tag(LogLevel level) {
+static void e9_print_tag(LogLevel level) {
     switch (level) {
         case LOG_DEBUG:
             e9puts("\e[1;37m[DEBUG]:\e[0m ");
@@ -72,9 +72,9 @@ void debug_log(LogLevel level, const char* s) {
     #endif
 }
 
-const char DIGIT_CHARS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+static const char DIGIT_CHARS[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-void logf_uint(unsigned long long number, int base) {
+static void logf_uint(unsigned long long number, int base) {
     char buffer[64];
     int pos = 0;
 
@@ -92,7 +92,7 @@ void logf_uint(unsigned long long number, int base) {
     }
 }
 
-void logf_int(long long number, int base) {
+static void logf_int(long long number, int base) {
     if (number < 0) {
         vgaputc((VGAChar){.chr = '-', .color = 0x07});
         #if E9_DEBUG_ENABLED
