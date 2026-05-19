@@ -70,7 +70,7 @@ struct GDTEntry gdt[] = {
     }, // User Mode Code Segment
 };
 
-struct GDTDescriptor gdt_desc = { sizeof(gdt), gdt };
+struct GDTDescriptor gdt_desc = { sizeof(gdt) - 1, gdt };
 
 void GDT_setup() {
     GDT_load(&gdt_desc, 0x08, 0x10);
