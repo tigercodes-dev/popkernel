@@ -41,6 +41,8 @@ void vga_print_tag(LogLevel level) {
     vgaputc((VGAChar){.chr = ' ', .color = 0x07});
 }
 
+#if E9_DEBUG_ENABLED
+
 void e9_print_tag(LogLevel level) {
     switch (level) {
         case LOG_DEBUG:
@@ -57,6 +59,8 @@ void e9_print_tag(LogLevel level) {
             break;
     }
 }
+
+#endif
 
 void debug_log(LogLevel level, const char* s) {
     vga_print_tag(level);

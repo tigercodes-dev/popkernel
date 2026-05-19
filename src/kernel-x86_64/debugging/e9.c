@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if E9_DEBUG_ENABLED
+
 #include "e9.h"
 #include "../io.h"
 
@@ -29,3 +31,5 @@ void e9puts(const char* s) {
         s++;
     }
 }
+
+#endif

@@ -16,5 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef BINARY_H
+#define BINARY_H
+
 #define SET_FLAG(v, f) (v) |= (f)
 #define UNSET_FLAG(v, f) (v) &= ~(f)
+
+#endif

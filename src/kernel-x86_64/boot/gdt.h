@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef GDT_H
+#define GDT_H
+
 #include <integers.h>
 
 struct __attribute__((packed)) GDTEntry {
@@ -33,3 +36,5 @@ struct __attribute__((packed)) GDTDescriptor {
 };
 
 void GDT_setup();
+
+#endif

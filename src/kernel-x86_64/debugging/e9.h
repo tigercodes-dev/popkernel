@@ -16,8 +16,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef DEBUG_E9_H
+#define DEBUG_E9_H
+
+#if E9_DEBUG_ENABLED
+
 // Output a character to port E9 (QEMU debug)
 void e9putc(char c);
 
 // Output a string to port E9 (QEMU debug)
 void e9puts(const char* s);
+
+#endif
+
+#endif

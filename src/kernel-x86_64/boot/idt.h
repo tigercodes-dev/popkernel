@@ -16,6 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef IDT_H
+#define IDT_H
+
 #include <integers.h>
 
 struct __attribute__((packed)) IDTEntry {
@@ -34,3 +37,5 @@ struct __attribute__((packed)) IDTDescriptor {
 };
 
 void IDT_setup();
+
+#endif
