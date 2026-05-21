@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - x86_64 kernel interrupt service routines
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,23 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
-#include "gdt.h"
-#include "../interrupts/idt.h"
-#include "../interrupts/isr.h"
+#ifndef INT_ISR_H
+#define INT_ISR_H
 
-extern u8 _kernel_load;
+#include <integers.h>
 
-// Kernel initialization
-void kmain() {
-    clear_screen();
-    #if DEBUG_ENABLED
-    debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
-    #endif
+struct __attribute__((packed)) InterruptStack {
+    u64 ds;
+    u64 r15, r14, r13, r12, r11, r10, r9, r8;
+    u64 rdi, rsi, rbp, _rsp, rbx, rdx, rcx, rax;
+    u64 interrupt, err_code;
+    u64 rip, cs, rflags, rsp, ss;
+};
 
-    GDT_setup();
-    IDT_setup();
-    ISR_setup_interrupts();
+typedef void (*InterruptHandler)(struct InterruptStack* stack);
 
-    for (;;);
-}
+void ISR_setup_interrupts();
+
+void ISR_set_handler(u8 interrupt, InterruptHandler handler);
+
+#endif

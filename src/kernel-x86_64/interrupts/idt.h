@@ -16,10 +16,25 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "idt.h"
-#include <binary.h>
+#ifndef IDT_H
+#define IDT_H
 
-void IDT_load(struct IDTDescriptor* descriptor);
+#include <integers.h>
+
+struct __attribute__((packed)) IDTEntry {
+    u16 offset_low;
+    u16 segment_selector;
+    u8 ist;
+    u8 flags;
+    u16 offset_mid;
+    u32 offset_high;
+    u32 _reserved;
+};
+
+struct __attribute__((packed)) IDTDescriptor {
+    u16 size;
+    struct IDTEntry* gdt;
+};
 
 enum IDTFlags {
     IDT_GATE_64BIT_INT  = 0xE,
@@ -33,29 +48,12 @@ enum IDTFlags {
     IDT_PRESENT         = 0x80,
 };
 
-static struct IDTEntry idt[256];
+void IDT_setup();
 
-static struct IDTDescriptor idt_desc = { sizeof(idt) - 1, idt };
+void IDT_set_gate(u8 interrupt, void* offset, u16 segment_selector, u8 flags);
 
-void IDT_set_gate(u8 interrupt, void* offset, u16 segment_selector, u8 flags) {
-    struct IDTEntry* entry = &idt[interrupt];
-    entry->offset_low = ((u64)offset) & 0xFFFF;
-    entry->segment_selector = segment_selector;
-    entry->ist = 0; // We dont have an IST or TSS yet
-    entry->flags = flags;
-    entry->offset_mid = (((u64)offset) >> 16) & 0xFFFF;
-    entry->offset_high = (((u64)offset) >> 32) & 0xFFFFFFFF;
-    entry->_reserved = 0;
-}
+void IDT_enable_gate(u8 interrupt);
 
-void IDT_enable_gate(u8 interrupt) {
-    SET_FLAG(idt[interrupt].flags, IDT_PRESENT);
-}
+void IDT_disable_gate(u8 interrupt);
 
-void IDT_disable_gate(u8 interrupt) {
-    UNSET_FLAG(idt[interrupt].flags, IDT_PRESENT);
-}
-
-void IDT_setup() {
-    IDT_load(&idt_desc);
-}
+#endif

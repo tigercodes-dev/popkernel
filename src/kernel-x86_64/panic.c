@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 kernel after long mode setup
+    PopKernel OS - x86_64 kernel panic
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,24 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../drivers/graphics/vga/textmode.h"
-#include "../debugging/logging.h"
-#include "gdt.h"
-#include "../interrupts/idt.h"
-#include "../interrupts/isr.h"
+#include "debugging/logging.h"
+#include "drivers/graphics/vga/textmode.h"
 
-extern u8 _kernel_load;
+// From halt.asm
+void kernel_halt();
 
-// Kernel initialization
-void kmain() {
-    clear_screen();
+void kernel_panic(const char* msg) {
     #if DEBUG_ENABLED
-    debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
+    debug_logf(LOG_ERROR, "Kernel Panic: %s\n", msg);
+    #else
+    vgaputs("Kernel Panic! ", 0x04);
+    vgaputs(msg, 0x07);
+    vgaputc((VGAChar){.chr = '\n', .color = 0x07});
     #endif
 
-    GDT_setup();
-    IDT_setup();
-    ISR_setup_interrupts();
-
-    for (;;);
+    vgaputs("The system cannot continue and will halt.\n", 0x07);
+    kernel_halt();
 }

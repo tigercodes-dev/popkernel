@@ -1,5 +1,5 @@
 /*
-    PopKernel OS - x86_64 interrupt descriptor table
+    PopKernel OS - x86_64 kernel panic
     Copyright (C) 2026  tigercodes-dev
 
     This program is free software: you can redistribute it and/or modify
@@ -16,26 +16,5 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef IDT_H
-#define IDT_H
-
-#include <integers.h>
-
-struct __attribute__((packed)) IDTEntry {
-    u16 offset_low;
-    u16 segment_selector;
-    u8 ist;
-    u8 flags;
-    u16 offset_mid;
-    u32 offset_high;
-    u32 _reserved;
-};
-
-struct __attribute__((packed)) IDTDescriptor {
-    u16 size;
-    struct IDTEntry* gdt;
-};
-
-void IDT_setup();
-
-#endif
+// Trigger a kernel panic.
+void kernel_panic(const char* msg);
