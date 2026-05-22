@@ -16,5 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef PANIC_H
+#define PANIC_H
+
 // Trigger a kernel panic.
 void kernel_panic(const char* msg);
+
+#endif
