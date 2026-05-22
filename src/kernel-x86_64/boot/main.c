@@ -21,11 +21,19 @@
 #include "gdt.h"
 #include "../interrupts/idt.h"
 #include "../interrupts/isr.h"
+#include "../interrupts/hardware/irq.h"
+#include "../interrupts/interrupt-control.h"
 
 extern u8 _kernel_load;
 
+void timer_handler(struct InterruptStack* stack) {
+    vgaputc((VGAChar){.chr = '.', .color = 0x07});
+}
+
 // Kernel initialization
 void kmain() {
+    disable_interrupts();
+    
     clear_screen();
     #if DEBUG_ENABLED
     debug_logf(LOG_INFO, "Kernel loaded at 0x%p\n", &_kernel_load);
@@ -33,7 +41,12 @@ void kmain() {
 
     GDT_setup();
     IDT_setup();
+
     ISR_setup_interrupts();
+    IRQ_setup(32);
+    enable_interrupts();
+
+    IRQ_set_handler(0, timer_handler);
 
     for (;;);
 }

@@ -84,6 +84,10 @@ void ISR_C_handler(struct InterruptStack* stack) {
             stack->cs, stack->ds, stack->ss, stack->rip, stack->rflags, stack->err_code);
         #endif
         kernel_panic("Unhandled CPU Exception Occurred");
+    } else {
+        #if DEBUG_ENABLED
+        debug_logf(LOG_WARN, "Unhandled Interrupt 0x%x: %s\n", stack->interrupt);
+        #endif
     }
 }
 
