@@ -23,6 +23,7 @@ export DISTDIR := $(abspath dist)
 export MEDIADIR := $(abspath media)
 export SCRIPTSDIR := $(abspath scripts)
 export TOOLCHAINDIR := $(abspath toolchain)
+export MACROSDIR := $(abspath src/macros)
 
 export ISOROOT := $(MEDIADIR)/iso-$(ARCH)
 
@@ -72,7 +73,7 @@ endif
 # Add the toolchain binaries to PATH
 export PATH := $(TOOLCHAINDIR)/$(TARGET)/bin:$(PATH)
 
-.PHONY: all all-x86_64 iso iso-x86_64 kernel kernel-x86_64 dep-check config-check clean menuconfig help license
+.PHONY: all all-x86_64 iso iso-x86_64 kernel kernel-x86_64 dep-check config-check clean menuconfig defconfig help license
 
 all: all-$(ARCH)
 

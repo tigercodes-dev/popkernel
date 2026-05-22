@@ -16,12 +16,14 @@
 
 SRC_ASM := $(shell find -type f -name '*.asm')
 OBJ_ASM := $(patsubst %.asm, $(BUILDDIR)/kernel-x86_64/%.asm.o, $(SRC_ASM))
+HEADERS_ASM := $(shell find -type f -name '*.inc')
 
 SRC_C := $(shell find -type f -name '*.c')
 OBJ_C := $(patsubst %.c, $(BUILDDIR)/kernel-x86_64/%.c.o, $(SRC_C))
+HEADERS_C := $(shell find -type f -name '*.h')
 
 LDFLAGS += -n --no-warn-rwx-segments
-CFLAGS += -I ../include -ffreestanding
+CFLAGS += -I $(MACROSDIR) -ffreestanding
 
 ifeq ($(CONFIG_MEMORY_MAP),y)
 LDFLAGS += -Map=$(ROOTDIR)/$(CONFIG_MEMORY_MAP_OUTPUT)
@@ -52,12 +54,12 @@ endif
 
 all: kernel-x86_64
 
-$(BUILDDIR)/kernel-x86_64/%.asm.o: %.asm
+$(BUILDDIR)/kernel-x86_64/%.asm.o: %.asm $(HEADERS_ASM)
 	@mkdir -p $(@D)
 	@$(AS) $(ASFLAGS) -felf64 -o $@ $<
 	@echo "  AS $< --> $@"
 
-$(BUILDDIR)/kernel-x86_64/%.c.o: %.c
+$(BUILDDIR)/kernel-x86_64/%.c.o: %.c $(HEADERS_C)
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -c -o $@ $<
 	@echo "  CC $< --> $@"
