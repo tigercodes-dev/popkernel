@@ -120,7 +120,7 @@ menuconfig: dep-check
 	@echo "*You will need to run 'make clean' if you have already built the OS with these source files!*"
 
 defconfig: configs/default-$(ARCH).config
-	@mv .config .config.old
+	@if [ -f .config ]; then mv .config .config.old; fi
 	@cp $< .config
 	@echo "Loaded config $<."
 	@echo
