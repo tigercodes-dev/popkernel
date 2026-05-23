@@ -59,6 +59,31 @@ menu "CPU and Memory Management"
 
 endmenu
 
+menu "Generated Media"
+    menuconfig MEDIA_ISO
+        bool "ISO Disk"
+        default y
+        help
+            Enables generating a bootable ISO with the kernel and other files.
+
+    if MEDIA_ISO
+        config ISO_OUTPUT
+            string "ISO output file"
+            default "dist/x86_64-popkernel.iso"
+            help
+                Sets the output file for the ISO. This is relative to the project root directory.
+
+        config ISO_VOLUME_NAME
+            string "ISO volume name"
+            default "POPKERNEL"
+            help
+                Sets the volume name of the ISO.
+                This string should only have uppercase letters, numbers, and the underscore.
+                Also, it should be limited to a maxiumum of 32 characters.
+    endif
+
+endmenu
+
 menuconfig DEBUGGING
     bool "Debugging Support"
     default y

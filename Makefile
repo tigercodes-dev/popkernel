@@ -56,6 +56,10 @@ export CONFIG_DEBUG_E9_HACK
 export CONFIG_DEBUG_SYMBOLS
 export CONFIG_DEBUG_SYMBOLS_OUTPUT
 
+export CONFIG_MEDIA_ISO
+export CONFIG_ISO_OUTPUT
+export CONFIG_ISO_VOLUME_NAME
+
 endif
 
 ifeq ($(CONFIG_ENABLE_WERROR),y)
@@ -77,7 +81,11 @@ export PATH := $(TOOLCHAINDIR)/$(TARGET)/bin:$(PATH)
 
 all: all-$(ARCH)
 
+all-x86_64: kernel-x86_64
+
+ifeq ($(CONFIG_MEDIA_ISO),y)
 all-x86_64: iso-x86_64
+endif
 
 iso: iso-$(ARCH)
 
@@ -85,7 +93,7 @@ iso-x86_64: kernel-x86_64 dep-check config-check
 	@echo "Copying boot files to iso..."
 	cp $(DISTDIR)/x86_64-pkrnl.kb0.bin $(ISOROOT)/boot/pkrnl.kb0
 	@echo "Creating bootable iso..."
-	grub-mkrescue -o $(DISTDIR)/x86_64-popkernel.iso $(ISOROOT)
+	grub-mkrescue -o $(CONFIG_ISO_OUTPUT) -V $(CONFIG_ISO_VOLUME_NAME) $(ISOROOT)
 	@echo "$(DISTDIR)/x86_64-popkernel.iso is ready."
 
 kernel: kernel-$(ARCH)

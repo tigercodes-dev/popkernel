@@ -38,6 +38,7 @@ CFLAGS += -DDEBUG_ENABLED
 ifeq ($(CONFIG_DEBUG_E9_HACK),y)
 CFLAGS += -DE9_DEBUG_ENABLED
 endif
+endif
 
 ifeq ($(CONFIG_DEBUG_SYMBOLS),y)
 ABS_DEBUG_SYMBOLS_OUTPUT := $(ROOTDIR)/$(patsubst "%",%,$(CONFIG_DEBUG_SYMBOLS_OUTPUT))
@@ -47,7 +48,6 @@ $(ABS_DEBUG_SYMBOLS_OUTPUT): $(DISTDIR)/x86_64-pkrnl.kb0.elf
 	@$(OBJCOPY) --only-keep-debug $< $@
 	@echo "  OBJCOPY $< --> $@"
 
-endif
 endif
 
 .PHONY: all kernel-x86_64
