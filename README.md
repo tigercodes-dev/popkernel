@@ -10,12 +10,22 @@ A operating system kernel that pops.
 - `grub` - creating bootable ISO
 - `xorriso` - needed by grub to create the ISO
 - `kconfig-frontends` - used for the menuconfig
+- `gdb` - debugging the kernel
 - Extra tools for cross compiling GCC and Binutils
     - gcc, g++, bison, flex, libgmp, libmpc, libmpfr, texinfo
 
 ### Ubuntu, Debian (apt)
 ```
-$ sudo apt install make nasm qemu-system-x86 grub2-common grub-pc-bin xorriso build-essential bison flex libgmp-dev libmpc-dev libmpfr-dev texinfo kconfig-frontends
+$ sudo apt update
+$ sudo apt install make nasm qemu-system-x86 grub2-common grub-pc-bin xorriso build-essential bison flex libgmp-dev libmpc-dev libmpfr-dev texinfo kconfig-frontends gdb
+```
+
+### Fedora, RHEL (dnf)
+```
+$ sudo dnf upgrade
+$ sudo dnf install make nasm qemu-system-x86 grub2-common xorriso gcc gcc-c++ bison flex gmp-devel libmpc-devel mpfr-devel texinfo gdb
+$ sudo dnf copr enable ivanmironov/kconfig-frontends
+$ sudo dnf install kconfig-frontends
 ```
 
 ## Building
@@ -34,7 +44,17 @@ Run `make` to build the kernel using the Makefile. A bootable ISO disk image wil
 
 ## Testing
 
+Firstly, make sure you built the ISO media.
+
 Use `./run.sh` to boot the OS in QEMU.
+
+## Debugging
+
+Firstly, make sure you built the ISO media and built the kernel with debug symbols enabled.
+
+Use `./debug.sh` to open in QEMU with debugging. Then, run `gdb dist/x86_64-pkrnl.dbg` and use the command `target remote :1234`.
+
+Now, you can use GDB to debug the kernel.
 
 ## Copyright
 

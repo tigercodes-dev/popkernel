@@ -83,4 +83,8 @@ echo "texinfo: OK"
 type -p kconfig-mconf > /dev/null || error "Dependency: kconfig-frontends not found."
 echo "kconfig-frontends: OK"
 
+# Check gdb
+type -p gdb > /dev/null || warn "Dependency: GDB not found. You need it to debug the OS."
+echo "GDB: OK"
+
 echo -e "\n\e[32;1m*All dependencies were found and are working.*\e[0m\n"
