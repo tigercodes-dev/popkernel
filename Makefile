@@ -90,10 +90,7 @@ endif
 iso: iso-$(ARCH)
 
 iso-x86_64: kernel-x86_64 dep-check config-check
-	@echo "Copying boot files to iso..."
-	cp $(DISTDIR)/x86_64-pkrnl.kb0.bin $(ISOROOT)/boot/pkrnl.kb0
-	@echo "Creating bootable iso..."
-	grub-mkrescue -o $(CONFIG_ISO_OUTPUT) -V $(CONFIG_ISO_VOLUME_NAME) $(ISOROOT)
+	@$(MAKE) -C media iso-x86_64
 	@echo "$(DISTDIR)/x86_64-popkernel.iso is ready."
 
 kernel: kernel-$(ARCH)
@@ -121,7 +118,7 @@ config-check:
 clean:
 	rm -rf $(BUILDDIR)/{*,.*}
 	rm -rf $(DISTDIR)/{*,.*}
-	rm -f $(ISOROOT)/boot/pkrnl.kb*
+	@$(MAKE) -C media iso-x86_64-clean
 
 menuconfig: dep-check
 	@kconfig-mconf Kconfig
