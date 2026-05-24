@@ -24,6 +24,7 @@
 #include "../interrupts/hardware/irq.h"
 #include "../interrupts/interrupt-control.h"
 #include "../drivers/ata/pio.h"
+#include "../drivers/ata/atapi.h"
 
 extern u8 _kernel_load;
 
@@ -57,6 +58,16 @@ void kmain() {
     if (device->status != 0) {
         #if DEBUG_ENABLED
         debug_logf(LOG_ERROR, "Error %u occured while identifying the CD-ROM device.\n", device->status);
+        #endif
+        goto end;
+    }
+
+    u8* read_buf = (u8*)0x400000;
+
+    ATAPI_read_sectors(device, 0, 1, 2048, read_buf);
+    if (device->status != 0) {
+        #if DEBUG_ENABLED
+        debug_logf(LOG_ERROR, "Error %u occured while reading the CD-ROM device.\n", device->status);
         #endif
         goto end;
     }

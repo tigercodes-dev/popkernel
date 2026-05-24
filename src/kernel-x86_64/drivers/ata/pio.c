@@ -17,8 +17,10 @@
 */
 
 #include "pio.h"
+#include "delay.h"
 #include "../../io.h"
 #include "../../interrupts/hardware/irq.h"
+#include "../../debugging/logging.h"
 
 #define CMD_IDENTIFY 0xEC
 #define CMD_IDENTIFY_PACKET 0xA1
@@ -26,17 +28,6 @@
 #define BSY_BIT 0x80
 #define DRQ_BIT 0x08
 #define ERR_BIT 0x01
-
-static void iowait(ATADevice* device) {
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-    inb(device->alt_status_reg);
-}
 
 static bool ready1 = false;
 static bool ready2 = false;
@@ -109,6 +100,7 @@ void ATA_identify_device(ATADevice* device) {
         return;
     } else {
         outb(device->drive_head_reg, 0xA0 | (device->slave << 4));
+        iowait(device);
         outb(device->sector_count_reg, 0);
         outb(device->lba_low_reg, 0);
         outb(device->lba_mid_reg, 0);
