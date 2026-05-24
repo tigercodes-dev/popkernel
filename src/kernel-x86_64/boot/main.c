@@ -23,6 +23,7 @@
 #include "../interrupts/isr.h"
 #include "../interrupts/hardware/irq.h"
 #include "../interrupts/interrupt-control.h"
+#include "../drivers/ata/pio.h"
 
 extern u8 _kernel_load;
 
@@ -47,6 +48,12 @@ void kmain() {
     enable_interrupts();
 
     IRQ_set_handler(0, timer_handler);
+
+    ATADevice* device = ATA_primary_slave;
+    ATA_identify_device(device);
+    #if DEBUG_ENABLED
+    debug_logf(LOG_DEBUG, "packet: %i sata: %i\n", device->packet, device->sata);
+    #endif
 
     for (;;);
 }
