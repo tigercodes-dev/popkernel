@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "ata.h"
 
+void ATA_setup_irqs();
 void ATA_software_reset(ATADevice* device);
 void ATA_identify_device(ATADevice* device);
 

@@ -49,11 +49,18 @@ void kmain() {
 
     IRQ_set_handler(0, timer_handler);
 
-    ATADevice* device = ATA_primary_slave;
-    ATA_identify_device(device);
-    #if DEBUG_ENABLED
-    debug_logf(LOG_DEBUG, "packet: %i sata: %i\n", device->packet, device->sata);
-    #endif
+    ATA_setup_irqs();
 
+    ATADevice* device = ATA_secondary_master;
+    ATA_identify_device(device);
+
+    if (device->status != 0) {
+        #if DEBUG_ENABLED
+        debug_logf(LOG_ERROR, "Error %u occured while identifying the CD-ROM device.\n", device->status);
+        #endif
+        goto end;
+    }
+
+    end:
     for (;;);
 }

@@ -18,13 +18,42 @@
 
 #include "pio.h"
 #include "../../io.h"
-#include "../../debugging/logging.h"
+#include "../../interrupts/hardware/irq.h"
+
+#define CMD_IDENTIFY 0xEC
+#define CMD_IDENTIFY_PACKET 0xA1
+
+#define BSY_BIT 0x80
+#define DRQ_BIT 0x08
+#define ERR_BIT 0x01
 
 static void iowait(ATADevice* device) {
     inb(device->alt_status_reg);
     inb(device->alt_status_reg);
     inb(device->alt_status_reg);
     inb(device->alt_status_reg);
+    inb(device->alt_status_reg);
+    inb(device->alt_status_reg);
+    inb(device->alt_status_reg);
+    inb(device->alt_status_reg);
+}
+
+static bool ready1 = false;
+static bool ready2 = false;
+
+void ATA_primary_irq(struct InterruptStack* stack) {
+    ready1 = true;
+    inb(0x1F7);
+}
+
+void ATA_secondary_irq(struct InterruptStack* stack) {
+    ready2 = true;
+    inb(0x177);
+}
+
+void ATA_setup_irqs() {
+    IRQ_set_handler(14, ATA_primary_irq);
+    IRQ_set_handler(15, ATA_secondary_irq);
 }
 
 void ATA_software_reset(ATADevice* device) {
@@ -33,8 +62,34 @@ void ATA_software_reset(ATADevice* device) {
     outb(device->dev_ctrl_reg, 0);
 }
 
+static bool wait_irq(ATADevice* device) {
+    int counter = 0;
+    if (device->bus == 1) {
+        while (!ready1) {
+            if (++counter >= 1000000) {
+                if (inb(device->status_reg) & 0x01 != 0) return false;
+            }
+        }
+        ready1 = false;
+    } else {
+        while (!ready2) {
+            if (++counter >= 1000000) {
+                if (inb(device->status_reg) & 0x01 != 0) return false;
+            }
+        }
+        ready2 = false;
+    }
+    return true;
+}
+
 void ATA_identify_device(ATADevice* device) {
     ATA_software_reset(device);
+    
+    if (!wait_irq(device)) {
+        device->status = 4;
+        return;
+    }
+
     if (inb(device->lba_mid_reg) == 0x00 && inb(device->lba_high_reg) == 0x00) {
         device->packet = false;
         device->sata = false;
@@ -46,10 +101,40 @@ void ATA_identify_device(ATADevice* device) {
         device->sata = true;
     } else {
         device->status = 1;
-        #if DEBUG_ENABLED
-        debug_logf(LOG_ERROR, "The ATA device %d %s cannot be identified as a valid ATA device.",
-            device->bus, device->slave ? "Slave" : "Master");
-        #endif
         return;
+    }
+
+    if (device->sata) {
+        device->status = 1;
+        return;
+    } else {
+        outb(device->drive_head_reg, 0xA0 | (device->slave << 4));
+        outb(device->sector_count_reg, 0);
+        outb(device->lba_low_reg, 0);
+        outb(device->lba_mid_reg, 0);
+        outb(device->lba_high_reg, 0);
+        iowait(device);
+
+        outb(device->command_reg, device->packet ? CMD_IDENTIFY_PACKET : CMD_IDENTIFY);
+        if (inb(device->status_reg) == 0) {
+            device->status = 2;
+            return;
+        }
+
+        if (inb(device->lba_low_reg) != 0 | inb(device->lba_high_reg) != 0) {
+            device->status = 3;
+            return;
+        }
+
+        if (!wait_irq(device)) {
+            device->status = 4;
+            return;
+        }
+
+        for (int i = 0; i < 256; i++) {
+            device->buffer[i] = inw(device->data_reg);
+        }
+
+        device->status = 0;
     }
 }
