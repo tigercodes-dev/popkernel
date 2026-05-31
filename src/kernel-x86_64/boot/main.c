@@ -23,8 +23,9 @@
 #include "../interrupts/isr.h"
 #include "../interrupts/hardware/irq.h"
 #include "../interrupts/interrupt-control.h"
+#include "../vfs/drive-io.h"
+#include "../drivers/ata/ata.h"
 #include "../drivers/ata/pio.h"
-#include "../drivers/ata/atapi.h"
 
 extern u8 _kernel_load;
 
@@ -52,24 +53,16 @@ void kmain() {
 
     ATA_setup_irqs();
 
-    ATADevice* device = ATA_secondary_master;
-    ATA_identify_device(device);
+    VFS_Drive drive;
+    drive.type = DRIVETYPE_IDE;
+    drive.sector_size = 2048;
+    drive.drive_desc = (void*)ATA_secondary_master;
 
-    if (device->status != 0) {
+    int err = VFS_Drive_read_sectors(&drive, 0, 1, (void*)0x400000);
+    if (err != 0) {
         #if DEBUG_ENABLED
-        debug_logf(LOG_ERROR, "Error %u occured while identifying the CD-ROM device.\n", device->status);
+        debug_logf(LOG_ERROR, "Disk error %i!\n", err);
         #endif
-        goto end;
-    }
-
-    u8* read_buf = (u8*)0x400000;
-
-    ATAPI_read_sectors(device, 0, 1, 2048, read_buf);
-    if (device->status != 0) {
-        #if DEBUG_ENABLED
-        debug_logf(LOG_ERROR, "Error %u occured while reading the CD-ROM device.\n", device->status);
-        #endif
-        goto end;
     }
 
     end:
