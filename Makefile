@@ -27,10 +27,12 @@ export MACROSDIR := $(abspath src/macros)
 
 export ISOROOT := $(MEDIADIR)/iso-$(ARCH)
 
+export CMDECHO := $(SCRIPTSDIR)/echo-command.sh
+
 export AS := nasm
 export CC := $(TARGET)-gcc
 export CXX := $(TARGET)-g++
-export LD := $(TARGET)-ld
+export LD := $(TARGET)-gcc
 export OBJCOPY := $(TARGET)-objcopy
 
 export ASFLAGS :=
@@ -111,7 +113,6 @@ config-check:
 	@if [ ! -f .config ]; then \
 		echo -e "You need to configure the build first.\nRun make defconfig to load a default configuration or run make menuconfig to open a configuration menu." && exit 1; \
 	fi
-	@echo
 	@echo "Configurations for build were found."
 	@echo
 

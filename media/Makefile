@@ -25,7 +25,7 @@ iso-x86_64-files: $(ISOROOT)/boot/pkrnl.kb0
 $(ISOROOT)/boot/pkrnl.kb0: $(DISTDIR)/x86_64-pkrnl.kb0.bin
 	@install -d -m 755 $(@D)
 	@install -m 644 $< $@
-	@echo "  INSTALL $< --> $@."
+	@$(CMDECHO) INSTALL "$<" "$@"
 
 iso-x86_64-clean:
 	rm -f $(ISOROOT)/boot/pkrnl.kb*

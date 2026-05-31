@@ -22,16 +22,17 @@ SRC_C := $(shell find -type f -name '*.c')
 OBJ_C := $(patsubst %.c, $(BUILDDIR)/kernel-x86_64/%.c.o, $(SRC_C))
 HEADERS_C := $(shell find -type f -name '*.h')
 
-LDFLAGS += -n --no-warn-rwx-segments
+LDFLAGS += -n -Wl,--no-warn-rwx-segments
 CFLAGS += -I $(MACROSDIR) -ffreestanding
+LDLIBS += -nostdlib -lgcc
 
 ifeq ($(CONFIG_MEMORY_MAP),y)
-LDFLAGS += -Map=$(ROOTDIR)/$(CONFIG_MEMORY_MAP_OUTPUT)
+LDFLAGS += -Wl,-Map=$(ROOTDIR)/$(CONFIG_MEMORY_MAP_OUTPUT)
 endif
 
 ASFLAGS += -dSTACKSIZE=$(CONFIG_STACK_SIZE)
 
-LDFLAGS += --defsym _kernel_load=$(CONFIG_KERNEL_LOAD_ADDRESS)
+LDFLAGS += -Wl,--defsym _kernel_load=$(CONFIG_KERNEL_LOAD_ADDRESS)
 
 ifeq ($(CONFIG_DEBUGGING),y)
 CFLAGS += -DDEBUG_ENABLED
@@ -46,7 +47,7 @@ kernel-x86_64: $(ABS_DEBUG_SYMBOLS_OUTPUT)
 
 $(ABS_DEBUG_SYMBOLS_OUTPUT): $(DISTDIR)/x86_64-pkrnl.kb0.elf
 	@$(OBJCOPY) --only-keep-debug $< $@
-	@echo "  OBJCOPY $< --> $@"
+	@$(CMDECHO) OBJCOPY "$<" "$@"
 
 endif
 
@@ -57,20 +58,20 @@ all: kernel-x86_64
 $(BUILDDIR)/kernel-x86_64/%.asm.o: %.asm $(HEADERS_ASM)
 	@mkdir -p $(@D)
 	@$(AS) $(ASFLAGS) -felf64 -o $@ $<
-	@echo "  AS $< --> $@"
+	@$(CMDECHO) AS "$<" "$@"
 
 $(BUILDDIR)/kernel-x86_64/%.c.o: %.c $(HEADERS_C)
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -c -o $@ $<
-	@echo "  CC $< --> $@"
+	@$(CMDECHO) CC "$<" "$@"
 
 kernel-x86_64: $(DISTDIR)/x86_64-pkrnl.kb0.bin
 
 $(DISTDIR)/x86_64-pkrnl.kb0.bin: $(DISTDIR)/x86_64-pkrnl.kb0.elf
 	@$(OBJCOPY) --output-target=binary $< $@
-	@echo "  OBJCOPY $< --> $@"
+	@$(CMDECHO) OBJCOPY "$<" "$@"
 
 $(DISTDIR)/x86_64-pkrnl.kb0.elf: linker.ld $(OBJ_ASM) $(OBJ_C)
 	@mkdir -p $(@D)
-	@$(LD) $(LDLIBS) $(LDFLAGS) -T $< -o $@ $(OBJ_ASM) $(OBJ_C)
-	@echo "  LD --> $@"
+	@$(LD) $(LDFLAGS) -T $< -o $@ $(OBJ_ASM) $(OBJ_C) $(LDLIBS)
+	@$(CMDECHO) LD "$<" "$@"
